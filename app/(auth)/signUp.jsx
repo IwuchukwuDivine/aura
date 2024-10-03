@@ -3,14 +3,15 @@ import React, { useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { images } from '../../constants'
 import FormField from '../../components/FormField'
-import { TouchableOpacity } from 'react-native'
 import CustomBtn from '../../components/CustomBtn'
 import { Link, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { createUser } from '../../lib/appwrites'
+import { useGlobalContext } from '../../context/GlobalProvider'
 
 const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const {setUser, setIsLoggedIn} = useGlobalContext()
   const [form, setForm] = useState({email: '', password: '', userName: ''})
 
   const sumbit = async() => {
@@ -21,7 +22,11 @@ const SignUp = () => {
     setIsLoading(true)
     try{
       const response = await createUser(form.email, form.password, form.userName);
-      router.replace('/Home')
+      if(response){
+        setUser(result);
+        setIsLoggedIn(true);
+        router.replace('/Home')
+      }
     }catch(err){
       console.log(err)
       Alert.alert('Error', err.message)

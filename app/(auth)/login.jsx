@@ -5,13 +5,15 @@ import { images } from '../../constants'
 import FormField from '../../components/FormField'
 import { Alert } from 'react-native'
 import CustomBtn from '../../components/CustomBtn'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
-import { signIn } from '../../lib/appwrites'
+import { getLoggedInUser, signIn } from '../../lib/appwrites'
+import { useGlobalContext } from '../../context/GlobalProvider'
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [form, setForm] = useState({email: '', password: ''})
+  const {setUser, setIsLoggedIn} = useGlobalContext()
 
   const sumbit = async() => {
     if(!form.email || !form.password){
@@ -21,7 +23,12 @@ const Login = () => {
     setIsLoading(true)
     try{
       await signIn(form.email, form.password);
-      router.replace('/Home')
+      const result = await getLoggedInUser();
+      if(result){
+        setUser(result);
+        setIsLoggedIn(true);
+        router.replace('/Home')
+      }
     }catch(err){
       console.log(err)
       Alert.alert('Error', err.message)

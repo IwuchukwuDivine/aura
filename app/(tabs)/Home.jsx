@@ -8,8 +8,10 @@ import EmptyState from '../../components/EmptyState'
 import { getAllPosts, getLatestPosts } from '../../lib/appwrites'
 import useAppWrite from '../../lib/useAppWrite'
 import VideoCard from '../../components/VideoCard'
+import { useGlobalContext } from '../../context/GlobalProvider'
 
 const Home = () => {
+  const {user} = useGlobalContext();
   const [isRefreshing, setRefreshing] = useState(false)
   const {data: Posts, refetch} = useAppWrite(getAllPosts)
   const {data: LatestPost} = useAppWrite(getLatestPosts)
@@ -31,13 +33,13 @@ const Home = () => {
             <View className="flex-row mb-6 justify-between items-center">
               <View >
                 <Text className="text-sm font-pmedium text-gray-100">Welcome Back</Text>
-                <Text className="text-2xl font-psemibold text-white">Deevyn</Text>
+                <Text className="text-2xl font-psemibold text-white">{user?.username}</Text>
               </View>
               <View>
                 <Image className="w-9 h-10" resizeMode='contain' source={images.logoSmall} />
               </View>
             </View>
-            <SearchInput placeholder={'Search for a video topic'} />
+            <SearchInput />
             <View className="w-full flex-1 pt-5 pb-8">
               <Text className="text-lg text-gray-100 font-pregular mb-3">Latest Videos</Text>
               <Trending posts={LatestPost} />
